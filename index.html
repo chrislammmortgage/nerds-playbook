@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Anti-Sprawl Playbook — Building AI Agents That Don't Break</title>
+<style>
+  :root{
+    --bg:#0b0f17; --panel:#121826; --panel2:#0f1421; --ink:#e8edf6; --muted:#9aa7bd;
+    --line:#1f2937; --accent:#4f9dff; --accent2:#37d4a7; --warn:#ffb454; --bad:#ff6b6b;
+    --chip:#1a2436; --good:#37d4a7;
+    --radius:16px; --mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#16203400,#0b0f17),var(--bg);
+    color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:880px;margin:0 auto;padding:32px 20px 80px}
+  header.hero{padding:40px 0 18px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .kicker{display:inline-block;font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--accent2);background:var(--chip);padding:6px 12px;border-radius:999px;margin-bottom:18px}
+  h1{font-size:clamp(28px,5vw,44px);line-height:1.1;margin:0 0 14px;font-weight:800;
+    background:linear-gradient(120deg,#fff,#9cc4ff 60%,#37d4a7);-webkit-background-clip:text;
+    background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{color:var(--muted);font-size:18px;max-width:680px}
+  .byline{margin-top:18px;font-size:13px;color:var(--muted)}
+  .byline b{color:var(--ink)}
+  section{margin-top:38px}
+  h2{font-size:24px;margin:0 0 6px;display:flex;align-items:center;gap:10px}
+  h2 .num{font-size:13px;color:var(--accent);border:1px solid var(--accent);border-radius:8px;
+    padding:2px 9px;font-family:var(--mono)}
+  h3{font-size:17px;margin:22px 0 8px}
+  p{margin:10px 0}
+  .lead{font-size:17px;color:#cdd7e8}
+  .panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+    border-radius:var(--radius);padding:22px 22px;margin:16px 0}
+  .quote{border-left:3px solid var(--accent);padding:10px 16px;margin:16px 0;color:#cfe0ff;
+    background:#0e1626;border-radius:0 12px 12px 0;font-style:italic}
+  .quote span{display:block;font-style:normal;color:var(--muted);font-size:13px;margin-top:6px}
+  .grid{display:grid;gap:14px}
+  @media(min-width:640px){.grid.two{grid-template-columns:1fr 1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .card h4{margin:0 0 6px;font-size:15px}
+  .card.bad{border-color:#3a2326}.card.good{border-color:#1d3a32}
+  .tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:6px;font-weight:700}
+  .tag.bad{background:#2a1416;color:#ff8f8f}.tag.good{background:#10241e;color:#5fe3bd}
+  .sym{font-size:13px;color:var(--muted)}
+  ol.steps{counter-reset:s;list-style:none;padding:0;margin:8px 0}
+  ol.steps>li{position:relative;padding:14px 16px 14px 56px;border:1px solid var(--line);
+    border-radius:12px;margin:10px 0;background:var(--panel)}
+  ol.steps>li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;
+    width:28px;height:28px;border-radius:8px;background:var(--accent);color:#04101f;font-weight:800;
+    display:grid;place-items:center;font-family:var(--mono)}
+  code{font-family:var(--mono);background:#0a1322;border:1px solid var(--line);border-radius:6px;
+    padding:1px 6px;font-size:13px;color:#9fe0c6}
+  pre{background:#0a1322;border:1px solid var(--line);border-radius:12px;padding:14px;overflow:auto;
+    font-family:var(--mono);font-size:13px;color:#cfe7d8}
+  .level{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .pill{font-size:12px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+  .pill.b{border-color:#2b6cb0;color:#9cc4ff}.pill.i{border-color:#2f855a;color:#7fe3bd}.pill.a{border-color:#9a6b2f;color:#ffce8a}
+  .def{display:grid;gap:10px;margin-top:10px}
+  .def .row{display:grid;grid-template-columns:160px 1fr;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+  @media(max-width:560px){.def .row{grid-template-columns:1fr}}
+  .def .term{font-weight:700;color:#bfe9d6}
+  a.link{color:var(--accent);text-decoration:none;border-bottom:1px solid #234}
+  a.link:hover{border-color:var(--accent)}
+  .toollist{display:grid;gap:10px}
+  .tool{display:flex;justify-content:space-between;gap:12px;align-items:center;background:var(--panel);
+    border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .tool .meta{font-size:13px;color:var(--muted)}
+  .callout{border:1px solid var(--warn);background:#1f1809;border-radius:12px;padding:16px;margin:18px 0}
+  .callout.bad{border-color:var(--bad);background:#1f0d0d}
+  .callout b{color:#ffd9a0}
+  .tldr{background:linear-gradient(180deg,#10261f,#0e1a16);border:1px solid #1d3a32;border-radius:16px;padding:20px}
+  .tldr ul{margin:8px 0 0;padding-left:18px}
+  footer{margin-top:50px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  .ck{color:var(--good);font-weight:700}
+  .mini{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="kicker">Nerds Mastermind · Field Notes</span>
+    <h1>The Anti-Sprawl Playbook</h1>
+    <p class="sub">Your AI agents keep breaking, burning money, and drifting off-track? Here's <b>why</b> — and the exact order to fix it. No code background needed.</p>
+    <div class="byline">
+      Built for <b>Michael</b> &amp; the crew after the 6/19 session · curated by <b>Chris Lamm</b><br>
+      <span class="mini">⏱️ 4-min skim · 🛠️ real tools + commands · 🎚️ tagged for every skill level. Start at the TL;DR, go as deep as you want.</span>
+    </div>
+  </header>
+
+  <section class="tldr">
+    <h2 style="margin-top:0">The 60-second version</h2>
+    <p class="mini">If you remember nothing else from the room:</p>
+    <ul>
+      <li><b>Sprawl &amp; drift are the disease.</b> Too many half-built workflows + too little context = fragile systems "built on sand with sticks."</li>
+      <li><b>Context is the cure.</b> The smartest AI people aren't building tools — they're building <b>context</b> (a "second brain").</li>
+      <li><b>Guardrails &amp; lanes.</b> Give each agent a narrow job. Overload an agent with 10–12+ skills and they compete and fail.</li>
+      <li><b>Protect your wallet.</b> Never use auto-recharge. Agents can loop overnight and hand you a $10k bill.</li>
+      <li><b>Finish before you start more.</b> One project to "done" beats fifteen at 70%.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="num">01</span> The problem, named</h2>
+    <p class="lead">Two words you'll hear constantly: <b>drift</b> and <b>sprawl</b>. They're cousins, and together they're why a system that felt magical in week 1 feels like a part-time job by week 6.</p>
+    <div class="quote">
+      "We've literally replaced maybe two full-time employees creating these workflows… the problem is the workflows break all the time. And I tried to spin up a manager to manage it…"
+      <span>— Michael, on the 6/19 call</span>
+    </div>
+    <div class="quote">
+      "AI can be lazy, take shortcuts, and create a fragile system built on sand with sticks that eventually requires a complete teardown… I spent the last 60 days rebuilding."
+      <span>— from the room (Chris's experience)</span>
+    </div>
+    <div class="grid two">
+      <div class="card"><h4>🌀 Drift</h4><p class="sym">The agent slowly stops behaving the way you set it up. Outputs wander off-voice, it "forgets" rules, it improvises. Caused by weak/contradictory context and too much loaded at once.</p></div>
+      <div class="card"><h4>🧱 Sprawl</h4><p class="sym">Too many things, half-finished: 15 workflows, 30 skills, 5 agents, memory files growing forever, cron jobs nobody remembers creating. Each new add makes the whole thing more fragile.</p></div>
+    </div>
+    <p>The trap (especially for non-coders): you keep <i>adding</i> to fix problems that adding <i>caused</i>. The fix is almost always <b>subtract + organize</b>, not add.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">02</span> Diagnose it yourself (10-minute self-check)</h2>
+    <p class="lead">Before you rebuild anything, score your setup. Answer yes/no honestly.</p>
+    <div class="grid two">
+      <div class="card bad">
+        <span class="tag bad">Red flags</span>
+        <ul class="sym">
+          <li>Agent loaded with <b>10+ skills</b> (they start competing)</li>
+          <li>No single <b>context file</b> (no <code>MEMORY.md</code> / <code>AGENTS.md</code>)</li>
+          <li>Memory/notes files that <b>only grow</b>, never get pruned or archived</li>
+          <li>Workflows you can't explain or that fail silently</li>
+          <li><b>Auto-recharge ON</b> for any AI account</li>
+          <li>One mega-agent doing everything (no lanes)</li>
+          <li>Heavy <b>Playwright/browser</b> automation where an API would do</li>
+        </ul>
+      </div>
+      <div class="card good">
+        <span class="tag good">Green flags</span>
+        <ul class="sym">
+          <li>Each agent has a <b>narrow persona + 3–7 skills</b></li>
+          <li>A living <b>context store</b> ("second brain") it reads first</li>
+          <li>Every folder has an <b>index</b> / table of contents</li>
+          <li>Hard <b>spend limits</b>, no auto-recharge</li>
+          <li>You can name what each workflow does in one sentence</li>
+          <li>You <b>finish</b> projects before starting new ones</li>
+        </ul>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Run these checks on your own machine</h3>
+      <p class="mini">For OpenClaw on a Mac mini — quick health/inventory commands. (Don't panic if a number is big; the point is to <i>see</i> the sprawl.)</p>
+<pre>openclaw status                 # is the gateway healthy?
+openclaw cron list              # every scheduled job — kill what you don't recognize
+ls ~/.openclaw/skills           # how many skills are loaded? (aim &lt; ~8 per agent)
+wc -l ~/.openclaw/workspace/MEMORY.md   # is your memory file ballooning?
+openclaw tasks                  # background work still running / stuck loops?</pre>
+      <p class="mini">If <code>cron list</code> shows jobs you can't explain, or MEMORY.md is thousands of lines — that's your drift, in writing.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">03</span> The fix — build a foundation (in order)</h2>
+    <p class="lead">Do these in sequence. Each one makes the next easier. This is the same path that took a fragile setup to one that survives.</p>
+    <ol class="steps">
+      <li><b>Build your "second brain" first.</b> Before more agents, create an organized context store of <i>you</i> — your voice, brand, business, decisions. Feed it email, messages, calendar, key docs. This is what makes output come back "90% the way you want it." Tool of choice in the room: <a class="link" href="https://obsidian.md">Obsidian</a>. <span class="mini">(See definition below.)</span></li>
+      <li><b>Index everything.</b> The catch: more context = more tokens per question. So put a short index / table-of-contents at the top of every folder and big file so the agent can find the right slice instead of reading everything. Cheap, huge payoff.</li>
+      <li><b>Write one context file.</b> Give the agent a single source of truth it reads first — in OpenClaw that's your <code>MEMORY.md</code> + <code>AGENTS.md</code> (Claude calls it <code>CLAUDE.md</code>; the generic term is "an MD file"). Rules, identity, do/don't, routing. This alone kills most drift.</li>
+      <li><b>Give every agent a lane.</b> Treat agents like employees with job descriptions. Narrow persona, limited context, 3–7 skills max. A good agent will literally refuse work "outside its lane." That's a feature, not a bug.</li>
+      <li><b>Prefer API over browser automation.</b> The single biggest cost lesson from the room: a skill built with Playwright (a robot clicking a browser) cost <b>$5,000</b>; rebuilt as a Python + API call it cost <b>36 cents</b>. If a real API exists, use it.</li>
+      <li><b>Finish, then test meticulously.</b> One project to done. Interrogate the agent: "why did you choose that? is there a more reliable or secure way?" Don't run 15 half-built automations.</li>
+      <li><b>Cap spend. No auto-recharge. Ever.</b> Set a hard limit. Agents get stuck in loops; people wake up to four-figure bills. This is non-negotiable.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2><span class="num">04</span> Find your level</h2>
+    <div class="level">
+      <span class="pill b">🟦 Beginner = "chat mode"</span>
+      <span class="pill i">🟩 Intermediate = workflows</span>
+      <span class="pill a">🟧 Advanced = agent fleet</span>
+    </div>
+    <div class="grid">
+      <div class="card"><span class="pill b">Beginner</span>
+        <p class="sym">You use AI to search, draft, research — command by command. <b>You're already ahead of ~90% of people.</b> Next move: start a context file. One page about your business, your voice, your rules. That's it.</p></div>
+      <div class="card"><span class="pill i">Intermediate</span>
+        <p class="sym">You've built workflows/automations (this is where Michael is). Pain = things break. Next move: stop adding, build the second brain + indexes, give each workflow one clear job, switch browser hacks to APIs.</p></div>
+      <div class="card"><span class="pill a">Advanced</span>
+        <p class="sym">You run a fleet of specialized agents with personas + lanes. Next move: future-proof cost with <b>local LLMs</b> (run open models on your own hardware/GPU so token bills stop). Powerful, but more to manage.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">05</span> Plain-English dictionary</h2>
+    <div class="def">
+      <div class="row"><div class="term">Agent</div><div>An AI given a job, tools, and the ability to act on its own (not just chat back). Think "digital employee."</div></div>
+      <div class="row"><div class="term">Drift</div><div>When an agent gradually stops following your setup — wanders off-voice, ignores rules. Usually a context problem.</div></div>
+      <div class="row"><div class="term">Sprawl</div><div>Too many half-built parts (workflows, skills, agents, files) making the whole system fragile.</div></div>
+      <div class="row"><div class="term">Context / Second brain</div><div>The organized knowledge you give an agent about you and your business so its output matches your intent. The real moat.</div></div>
+      <div class="row"><div class="term">Skill</div><div>A specific capability you add to an agent (send email, read calendar). Too many at once = they compete and misfire.</div></div>
+      <div class="row"><div class="term">Guardrails</div><div>Limits that keep an agent in its lane — narrow task, restricted tools, what it must never do.</div></div>
+      <div class="row"><div class="term">Tokens</div><div>The "fuel" you pay for per word in/out. More context loaded = more tokens per question. Indexes reduce this.</div></div>
+      <div class="row"><div class="term">Frontier model</div><div>The big paid cloud models (ChatGPT, Claude, etc.). Powerful, token-metered.</div></div>
+      <div class="row"><div class="term">Local LLM</div><div>An open AI model running on your own hardware. No per-token bill — you just pay for power/compute.</div></div>
+      <div class="row"><div class="term">MD file</div><div>A plain-text Markdown file (<code>.md</code>) used as an agent's instructions/context. OpenClaw: <code>MEMORY.md</code>, <code>AGENTS.md</code>. Claude: <code>CLAUDE.md</code>.</div></div>
+      <div class="row"><div class="term">Playwright</div><div>A tool that drives a real web browser by clicking. Flexible but slow + expensive. Prefer an API when one exists.</div></div>
+      <div class="row"><div class="term">API</div><div>A direct, structured way for software to talk to a service — far cheaper/faster than clicking through a browser.</div></div>
+      <div class="row"><div class="term">Cron job</div><div>A scheduled task that runs on its own (e.g., every morning). Great — until you have forgotten ones running wild.</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">06</span> Tools mentioned in the room</h2>
+    <div class="toollist">
+      <div class="tool"><div><b>OpenClaw</b><div class="meta">The agent runtime several of us run (often on a Mac mini).</div></div><a class="link" href="https://docs.openclaw.ai">docs.openclaw.ai</a></div>
+      <div class="tool"><div><b>Obsidian</b><div class="meta">Markdown knowledge base — the go-to for building a "second brain."</div></div><a class="link" href="https://obsidian.md">obsidian.md</a></div>
+      <div class="tool"><div><b>Claude Code / Codex</b><div class="meta">Coding agents — treat each like a specialist with a lane.</div></div><a class="link" href="https://claude.com/product/claude-code">claude.com</a></div>
+      <div class="tool"><div><b>Whisper</b><div class="meta">Turns voice/recordings into text to feed your second brain.</div></div><a class="link" href="https://github.com/openai/whisper">openai/whisper</a></div>
+      <div class="tool"><div><b>Hugging Face</b><div class="meta">Open models + rentable GPUs ($0.50–$20/hr) to run local LLMs.</div></div><a class="link" href="https://huggingface.co">huggingface.co</a></div>
+      <div class="tool"><div><b>GoHighLevel</b><div class="meta">The "I can do this for $279/mo instead of $18k" CRM example.</div></div><a class="link" href="https://www.gohighlevel.com">gohighlevel.com</a></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">07</span> Michael — your specific next 3 moves</h2>
+    <div class="panel">
+      <p class="lead" style="margin-top:0">You said it yourself on the call: agents on the Mac mini replacing ~2 FTEs, but workflows break, and you spun up a manager to babysit them. Here's the order I'd attack it:</p>
+      <ol class="steps">
+        <li><b>Don't add the "manager." Add context.</b> A manager-agent on top of fragile workflows just adds sprawl. First build one <code>MEMORY.md</code>/context file the agents read first. You said you "haven't done a ton of context work" — that's the whole ballgame.</li>
+        <li><b>Audit the breakage.</b> List every workflow. For each: one sentence of what it does + is it API or browser? Kill or rebuild the browser-driven ones as API/Python (your own $5,000 → 36¢ lesson). Cut any agent carrying 10+ skills down to a lane.</li>
+        <li><b>Cap spend + index your folders.</b> Turn OFF auto-recharge today. Add a short index to the top of each context folder so you're not burning tokens loading everything every time.</li>
+      </ol>
+      <p class="mini">Do these three before building anything new. Foundation first, fleet second.</p>
+    </div>
+    <div class="callout bad"><b>⚠️ Do this tonight:</b> Check every AI account and <b>turn off auto-recharge / set a hard spend cap.</b> A looping agent overnight is a real four-figure bill — multiple people in the room have the scars.</div>
+  </section>
+
+  <footer>
+    <p><b>Nerds Mastermind</b> — keep it simple, finish what you start, build context not chaos.<br>
+    Grounded in the 6/19 session ("Leveraging AI Agents for Business Automation"). Tools/links verified against current docs. Questions → drop them in the thread.</p>
+    <p class="mini">Made for the crew · share freely.</p>
+  </footer>
+
+</div>
+</body>
+</html>
